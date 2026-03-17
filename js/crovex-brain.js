@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-14';
+  const VERSION = '20260317-15';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -193,17 +193,17 @@
     let dx;
     let dy;
 
-    // Match CSS object-fit: cover mapping used by the background image.
+    // Match CSS object-fit: contain mapping for full-brain alignment.
     if (imgRatio > screenRatio) {
-      dh = h;
-      dw = imgRatio * dh;
-      dx = (w - dw) / 2;
-      dy = 0;
-    } else {
       dw = w;
       dh = dw / imgRatio;
       dx = 0;
       dy = (h - dh) / 2;
+    } else {
+      dh = h;
+      dw = dh * imgRatio;
+      dx = (w - dw) / 2;
+      dy = 0;
     }
 
     if (!inlineMode && brainImg.complete && brainImg.naturalWidth) {
