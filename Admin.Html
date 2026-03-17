@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CROVEX Admin</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #050510;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .container {
+        width: 350px;
+        padding: 20px;
+        background: rgba(0,0,0,0.4);
+        border: 1px solid #4a4aff;
+        border-radius: 15px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px #4a4aff;
+    }
+
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 3px solid #4a4aff;
+        box-shadow: 0 0 15px #4a4aff;
+    }
+
+    #aiText {
+        font-size: 14px;
+        min-height: 40px;
+        margin-bottom: 15px;
+        white-space: pre-line;
+    }
+
+    #loginBox {
+        display: none;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #4a4aff;
+        background: #0a0a20;
+        color: white;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 95%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background: #4a4aff;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #error {
+        color: #ff6b6b;
+        min-height: 20px;
+        margin-top: 5px;
+    }
+
+    #adminPanel {
+        display: none;
+        margin-top: 20px;
+        text-align: left;
+        font-size: 14px;
+        border-top: 1px solid #4a4aff;
+        padding-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <img src="profile.jpg" class="avatar" alt="CROVEX AI">
+
+    <div id="aiText"></div>
+
+    <div id="loginBox">
+        <input type="password" id="password" placeholder="Enter password...">
+        <button onclick="checkPass()">Authenticate</button>
+        <div id="error"></div>
+    </div>
+
+    <div id="adminPanel">
+        <strong>ADMIN PANEL</strong><br><br>
+        • CROVEX core placeholder active<br>
+        • Future AI integration ready<br>
+        • Logs will appear here later<br>
+        • System stable<br>
+    </div>
+</div>
+
+<script>
+    const lines = [
+        "CROVEX ADMIN INTERFACE BOOTING...",
+        "Neural core online.",
+        "Identity verification required.",
+        "Please enter password to continue."
+    ];
+
+    let index = 0;
+    let char = 0;
+
+    function typeEffect() {
+        if (index < lines.length) {
+            let current = lines[index];
+            document.getElementById("aiText").innerText = current.substring(0, char);
+
+            if (char < current.length) {
+                char++;
+                setTimeout(typeEffect, 40);
+            } else {
+                index++;
+                char = 0;
+                setTimeout(typeEffect, 500);
+            }
+        } else {
+            document.getElementById("loginBox").style.display = "block";
+        }
+    }
+
+    typeEffect();
+
+    function checkPass() {
+        const PASSWORD = "crovexadmin"; // CHANGE THIS
+        let input = document.getElementById("password").value;
+
+        if (input === PASSWORD) {
+            document.getElementById("error").innerText = "";
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("adminPanel").style.display = "block";
+            document.getElementById("aiText").innerText = "Access granted. Welcome, administrator.";
+        } else {
+            document.getElementById("error").innerText = "Incorrect password.";
+        }
+    }
+</script>
+
+</body>
+</html>
