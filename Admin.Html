@@ -13,7 +13,6 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        overflow: hidden;
     }
 
     .container {
@@ -43,10 +42,7 @@
         white-space: pre-line;
     }
 
-    #loginBox {
-        display: none;
-        margin-top: 10px;
-    }
+    #loginBox { display: none; }
 
     input {
         width: 90%;
@@ -62,18 +58,13 @@
         width: 95%;
         padding: 10px;
         border-radius: 8px;
-        border: none;
         background: #4a4aff;
         color: white;
         font-weight: bold;
         cursor: pointer;
     }
 
-    #error {
-        color: #ff6b6b;
-        min-height: 20px;
-        margin-top: 5px;
-    }
+    #error { color: #ff6b6b; min-height: 20px; }
 
     #adminPanel {
         display: none;
@@ -88,7 +79,7 @@
 <body>
 
 <div class="container">
-    <img src="profile.jpg" class="avatar" alt="CROVEX AI">
+    <img src="Image/ChatGPT Image Mar 16, 2026, 08_30_51 PM.png" class="avatar">
 
     <div id="aiText"></div>
 
@@ -115,8 +106,7 @@
         "Please enter password to continue."
     ];
 
-    let index = 0;
-    let char = 0;
+    let index = 0, char = 0;
 
     function typeEffect() {
         if (index < lines.length) {
@@ -139,7 +129,7 @@
     typeEffect();
 
     function checkPass() {
-        const PASSWORD = "crovexadmin"; // CHANGE THIS
+        const PASSWORD = "crovexadmin"; 
         let input = document.getElementById("password").value;
 
         if (input === PASSWORD) {
