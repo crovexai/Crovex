@@ -2,46 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CROVEX AI Brain Pulse</title>
 
   <style>
+    html { background: #02030a; }
     body {
       margin: 0;
-      background: #02030a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: transparent;
       height: 100vh;
       overflow: hidden;
       font-family: system-ui, sans-serif;
     }
 
-    .brain-wrapper {
-      position: relative;
-      width: 1024px;   /* adjust to your brain-full.jpeg size */
-      height: 512px;   /* adjust to your brain-full.jpeg size */
-    }
-
-    .brain-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-
-    canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    /* Optional CROVEX profile logo */
+    /* CROVEX profile logo overlay */
     .crovex-logo {
-      position: absolute;
+      position: fixed;
       top: 20px;
       left: 20px;
       width: 120px;
@@ -53,23 +29,8 @@
 
 <body>
 
-  <div class="brain-wrapper">
+  <img src="Image/crovex_profile.png" class="crovex-logo" alt="CROVEX logo" />
 
-    <!-- Optional CROVEX profile logo -->
-    <img src="Image/crovex_profile.png" class="crovex-logo" />
-
-    <!-- Background brain image -->
-    <img src="Image/brain-full.jpeg" class="brain-bg" />
-
-    <!-- Pulse canvas -->
-    <canvas id="pulseCanvas"></canvas>
-  </div>
-
-  <script>
-    // -----------------------------
-    // CONFIG
-    // -----------------------------
-    const CANVAS_WIDTH = 1024;
-    const CANVAS_HEIGHT = 512;
-
-    // Adjust these to match the exact center of your microchip
+  <script src="js/crovex-brain.js"></script>
+</body>
+</html>
