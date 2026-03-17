@@ -1,13 +1,13 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-16';
+  const VERSION = '20260317-17';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
   const CHIP_ORIGIN = { x: 532, y: 540 };
   // Fine calibration: shift all mask-driven effects over the brain image.
-  const MASK_OFFSET_X = -14;
+  const MASK_OFFSET_X = -4;
   const MASK_OFFSET_Y = 10;
 
   const ASSET_PATH = 'Image/';
