@@ -2,7 +2,7 @@
 // CROVEX brain animation engine
 (function () {
   const CANVAS_ID = 'crovexBrain';
-  const ASSET_VERSION = '20260317-5';
+  const ASSET_VERSION = '20260317-6';
   const ASSET_PATH = 'Image/';
   const BRAIN_IMG = ASSET_PATH + 'brain-full.jpeg?v=' + ASSET_VERSION;
   const CHIP_MASK_IMG = ASSET_PATH + 'chip-masks.png?v=' + ASSET_VERSION;
@@ -11,8 +11,8 @@
 
   const LOOP_DURATION = 2.4;
   const MASK_SIZE = 1024;
-  const CHIP_ORIGIN = { x: 760, y: 260 };
-  const MASK_WHITE_START = 90;
+  const CHIP_ORIGIN = { x: 532, y: 540 };
+  const MASK_WHITE_START = 45;
   const MASK_WHITE_END = 255;
 
   const CHIP_FLASH_COLOR = 'rgba(0,255,255,1)';
@@ -107,7 +107,7 @@
       let alphaFromWhite = 0;
       if (luminance >= MASK_WHITE_START) {
         const normalized = Math.min(1, (luminance - MASK_WHITE_START) / (MASK_WHITE_END - MASK_WHITE_START));
-        alphaFromWhite = Math.floor(normalized * 255);
+        alphaFromWhite = Math.floor(Math.pow(normalized, 0.55) * 255);
       }
 
       const outAlpha = Math.min(alphaFromWhite, a);
@@ -145,16 +145,18 @@
     layerCtx.globalCompositeOperation = 'destination-in';
     layerCtx.drawImage(maskSource, 0, 0);
     layerCtx.globalCompositeOperation = 'source-over';
+    tempCtx.globalCompositeOperation = 'lighter';
     tempCtx.drawImage(layerCanvas, 0, 0);
+    tempCtx.globalCompositeOperation = 'source-over';
   }
 
   function composeFrame(t) {
     tempCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
     const phase = (t % LOOP_DURATION) / LOOP_DURATION;
 
-    const chipBurst = Math.max(0, 1 - phase / 0.14);
+    const chipBurst = Math.max(0, 1 - phase / 0.18);
     if (chipBurst > 0) {
-      const chipRadius = 18 + (1 - chipBurst) * 55;
+      const chipRadius = 12 + (1 - chipBurst) * 85;
       const chipGrad = layerCtx.createRadialGradient(
         CHIP_ORIGIN.x,
         CHIP_ORIGIN.y,
@@ -163,13 +165,14 @@
         CHIP_ORIGIN.y,
         chipRadius
       );
-      chipGrad.addColorStop(0, CHIP_FLASH_COLOR.replace('1)', Math.min(1, chipBurst * 1.2).toFixed(3) + ')'));
+      chipGrad.addColorStop(0, CHIP_FLASH_COLOR.replace('1)', Math.min(1, chipBurst * 1.35).toFixed(3) + ')'));
+      chipGrad.addColorStop(0.35, CHIP_FLASH_COLOR.replace('1)', (chipBurst * 0.7).toFixed(3) + ')'));
       chipGrad.addColorStop(1, 'rgba(0,0,0,0)');
       drawLayer(chipMaskCanvas, chipGrad);
     }
 
-    const boardRadius = 34 + phase * (MASK_SIZE * 1.25);
-    const boardAlpha = Math.max(0, 0.95 - phase);
+    const boardRadius = 18 + phase * (MASK_SIZE * 1.3);
+    const boardAlpha = Math.max(0, 1.1 - phase * 0.92);
     const boardGrad = layerCtx.createRadialGradient(
       CHIP_ORIGIN.x,
       CHIP_ORIGIN.y,
@@ -179,12 +182,13 @@
       boardRadius
     );
     boardGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    boardGrad.addColorStop(0.34, DIGITAL_PULSE_COLOR.replace('1)', boardAlpha.toFixed(3) + ')'));
+    boardGrad.addColorStop(0.3, DIGITAL_PULSE_COLOR.replace('1)', boardAlpha.toFixed(3) + ')'));
+    boardGrad.addColorStop(0.52, DIGITAL_PULSE_COLOR.replace('1)', (boardAlpha * 0.55).toFixed(3) + ')'));
     boardGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawLayer(chipMaskCanvas, boardGrad);
 
-    const aiWave = 0.62 + 0.38 * Math.sin(phase * Math.PI * 2);
-    const aiRadius = 80 + phase * (MASK_SIZE * 1.4);
+    const aiWave = 0.75 + 0.25 * Math.sin(phase * Math.PI * 2);
+    const aiRadius = 40 + phase * (MASK_SIZE * 1.42);
     const aiGrad = layerCtx.createRadialGradient(
       CHIP_ORIGIN.x,
       CHIP_ORIGIN.y,
@@ -193,13 +197,13 @@
       CHIP_ORIGIN.y,
       aiRadius
     );
-    aiGrad.addColorStop(0, AI_GLOW_COLOR.replace('0.4', (aiWave * 0.45).toFixed(3)));
-    aiGrad.addColorStop(0.55, AI_GLOW_COLOR.replace('0.4', (aiWave * 0.22).toFixed(3)));
+    aiGrad.addColorStop(0, AI_GLOW_COLOR.replace('0.4', (aiWave * 0.85).toFixed(3)));
+    aiGrad.addColorStop(0.5, AI_GLOW_COLOR.replace('0.4', (aiWave * 0.35).toFixed(3)));
     aiGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawLayer(aiMaskCanvas, aiGrad);
 
-    const bioRadius = 22 + phase * (MASK_SIZE * 1.35);
-    const bioAlpha = Math.max(0, 0.9 - phase * 0.85);
+    const bioRadius = 14 + phase * (MASK_SIZE * 1.38);
+    const bioAlpha = Math.max(0, 1.05 - phase * 0.8);
     const bioGrad = layerCtx.createRadialGradient(
       CHIP_ORIGIN.x,
       CHIP_ORIGIN.y,
@@ -209,7 +213,8 @@
       bioRadius
     );
     bioGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    bioGrad.addColorStop(0.27, BIO_PULSE_COLOR.replace('1)', bioAlpha.toFixed(3) + ')'));
+    bioGrad.addColorStop(0.24, BIO_PULSE_COLOR.replace('1)', bioAlpha.toFixed(3) + ')'));
+    bioGrad.addColorStop(0.44, BIO_PULSE_COLOR.replace('1)', (bioAlpha * 0.55).toFixed(3) + ')'));
     bioGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawLayer(nerveMaskCanvas, bioGrad);
   }
