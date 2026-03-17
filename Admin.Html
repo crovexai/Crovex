@@ -1,147 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>CROVEX Admin</title>
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #050510;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CROVEX Admin</title>
+  <style>
+    :root{
+      --bg:#050510;--accent:#4a4aff;--panel-bg:rgba(0,0,0,0.45);
     }
-
-    .container {
-        width: 350px;
-        padding: 20px;
-        background: rgba(0,0,0,0.4);
-        border: 1px solid #4a4aff;
-        border-radius: 15px;
-        text-align: center;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 20px #4a4aff;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#fff;
+      display:flex;align-items:center;justify-content:center;min-height:100vh;
     }
-
-    .avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        margin-bottom: 15px;
-        border: 3px solid #4a4aff;
-        box-shadow: 0 0 15px #4a4aff;
+    .container{
+      width:360px;max-width:94vw;padding:18px;border-radius:12px;background:var(--panel-bg);
+      border:1px solid rgba(74,74,255,0.18);box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:center;
+      backdrop-filter:blur(8px);
     }
-
-    #aiText {
-        font-size: 14px;
-        min-height: 40px;
-        margin-bottom: 15px;
-        white-space: pre-line;
-    }
-
-    #loginBox { display: none; }
-
-    input {
-        width: 90%;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #4a4aff;
-        background: #0a0a20;
-        color: white;
-        margin-bottom: 10px;
-    }
-
-    button {
-        width: 95%;
-        padding: 10px;
-        border-radius: 8px;
-        background: #4a4aff;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    #error { color: #ff6b6b; min-height: 20px; }
-
-    #adminPanel {
-        display: none;
-        margin-top: 20px;
-        text-align: left;
-        font-size: 14px;
-        border-top: 1px solid #4a4aff;
-        padding-top: 10px;
-    }
-</style>
+    .avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 12px;border:3px solid var(--accent);overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    #aiText{min-height:56px;margin-bottom:12px;font-size:14px;white-space:pre-line}
+    input{width:92%;padding:10px;border-radius:8px;border:1px solid rgba(74,74,255,0.12);background:#0a0a20;color:#fff;margin-bottom:10px}
+    button{width:95%;padding:10px;border-radius:8px;background:var(--accent);border:none;color:#fff;font-weight:700;cursor:pointer}
+    #error{min-height:20px;color:#ff6b6b;margin-top:8px}
+    #adminPanel{display:none;text-align:left;margin-top:14px;border-top:1px solid rgba(74,74,255,0.12);padding-top:10px;font-size:14px}
+    @media (prefers-reduced-motion:reduce){*{transition:none;animation:none}}
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <img src="Image/crovex_profile.png" class="avatar">
-
-    <div id="aiText"></div>
-
-    <div id="loginBox">
-        <input type="password" id="password" placeholder="Enter password...">
-        <button onclick="checkPass()">Authenticate</button>
-        <div id="error"></div>
+  <main class="container" role="main" aria-labelledby="admin-title">
+    <div class="avatar" aria-hidden="false">
+      <img src="Image/crovex_profile.png" alt="CROVEX admin avatar" width="110" height="110" loading="lazy">
     </div>
 
-    <div id="adminPanel">
-        <strong>ADMIN PANEL</strong><br><br>
-        • CROVEX core placeholder active<br>
-        • Future AI integration ready<br>
-        • Logs will appear here later<br>
-        • System stable<br>
-    </div>
-</div>
+    <h2 id="admin-title" style="font-size:18px;margin-bottom:8px">CROVEX Admin</h2>
+    <div id="aiText" aria-live="polite"></div>
 
-<script>
-    const lines = [
+    <div id="loginBox" style="display:none">
+      <input id="password" type="password" placeholder="Enter password" aria-label="Admin password">
+      <button id="authBtn">Authenticate</button>
+      <div id="error" role="alert"></div>
+    </div>
+
+    <div id="adminPanel" aria-hidden="true">
+      <strong>ADMIN PANEL</strong>
+      <ul style="margin-top:8px;line-height:1.6">
+        <li>CROVEX core placeholder active</li>
+        <li>Future AI integration ready</li>
+        <li>Logs will appear here later</li>
+        <li>System stable</li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    // Typing effect then show login
+    (function(){
+      const lines = [
         "CROVEX ADMIN INTERFACE BOOTING...",
         "Neural core online.",
         "Identity verification required.",
         "Please enter password to continue."
-    ];
-
-    let index = 0, char = 0;
-
-    function typeEffect() {
-        if (index < lines.length) {
-            let current = lines[index];
-            document.getElementById("aiText").innerText = current.substring(0, char);
-
-            if (char < current.length) {
-                char++;
-                setTimeout(typeEffect, 40);
-            } else {
-                index++;
-                char = 0;
-                setTimeout(typeEffect, 500);
-            }
+      ];
+      const el = document.getElementById('aiText');
+      let i=0, ch=0;
+      function step(){
+        if(i < lines.length){
+          const cur = lines[i];
+          el.textContent = cur.slice(0,ch);
+          if(ch < cur.length){ ch++; setTimeout(step, 36); }
+          else { i++; ch=0; setTimeout(step, 420); }
         } else {
-            document.getElementById("loginBox").style.display = "block";
+          document.getElementById('loginBox').style.display = 'block';
         }
-    }
+      }
+      step();
+    })();
 
-    typeEffect();
-
-    function checkPass() {
-        const PASSWORD = "crovexadmin"; 
-        let input = document.getElementById("password").value;
-
-        if (input === PASSWORD) {
-            document.getElementById("error").innerText = "";
-            document.getElementById("loginBox").style.display = "none";
-            document.getElementById("adminPanel").style.display = "block";
-            document.getElementById("aiText").innerText = "Access granted. Welcome, administrator.";
+    // Authentication and automation
+    (function(){
+      const PASSWORD = 'crovexadmin';
+      const btn = document.getElementById('authBtn');
+      const err = document.getElementById('error');
+      btn.addEventListener('click', ()=> {
+        const val = document.getElementById('password').value;
+        if(val === PASSWORD){
+          err.textContent = '';
+          document.getElementById('loginBox').style.display = 'none';
+          const panel = document.getElementById('adminPanel');
+          panel.style.display = 'block';
+          panel.setAttribute('aria-hidden','false');
+          document.getElementById('aiText').textContent = 'Access granted. Welcome, administrator.';
+          // Example automation: fetch admin data if available
+          if (window.fetch) {
+            fetch('admin-data.json', {cache:'no-store'}).then(r => {
+              if (r.ok) return r.json();
+            }).then(data => {
+              if (data && data.notice) {
+                const notice = document.createElement('div');
+                notice.style.marginTop = '10px';
+                notice.style.padding = '8px';
+                notice.style.background = 'rgba(74,74,255,0.06)';
+                notice.style.borderRadius = '8px';
+                notice.textContent = data.notice;
+                panel.appendChild(notice);
+              }
+            }).catch(()=>{/* ignore */});
+          }
         } else {
-            document.getElementById("error").innerText = "Incorrect password.";
+          err.textContent = 'Incorrect password.';
         }
-    }
-</script>
-
+      });
+    })();
+  </script>
 </body>
 </html>
