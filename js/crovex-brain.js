@@ -4,9 +4,9 @@
   const CANVAS_ID = 'crovexBrain';
   const ASSET_PATH = 'Image/';
   const BRAIN_IMG = ASSET_PATH + 'brain-full.jpeg';
-  const CHIP_MASK_IMG = ASSET_PATH + 'chip-mask.png';
-  const AI_MASK_IMG = ASSET_PATH + 'ai-brain-mask.png';
-  const NERVE_MASK_IMG = ASSET_PATH + 'nerve-mask.png';
+  const CHIP_MASK_IMG = ASSET_PATH + 'chip-masks.png';
+  const AI_MASK_IMG = ASSET_PATH + 'ai-brain-masks.png';
+  const NERVE_MASK_IMG = ASSET_PATH + 'nerve-masks.png';
 
   // Timing (seconds)
   const LOOP_DURATION = 2.4;
@@ -54,6 +54,11 @@
   const nerveMaskCanvas = makeCanvas(MASK_SIZE, MASK_SIZE);
   const tempCanvas = makeCanvas(MASK_SIZE, MASK_SIZE);
   const tempCtx = tempCanvas.getContext('2d');
+  // Pre-allocated layer canvases reused every frame to avoid GC pressure
+  const aiLayerCanvas = makeCanvas(MASK_SIZE, MASK_SIZE);
+  const aiLayerCtx = aiLayerCanvas.getContext('2d');
+  const pulseLayerCanvas = makeCanvas(MASK_SIZE, MASK_SIZE);
+  const pulseLayerCtx = pulseLayerCanvas.getContext('2d');
 
   // Load images
   const brainImg = new Image();
@@ -76,6 +81,11 @@
   chipMaskImg.onload = onAssetLoad;
   aiMaskImg.onload = onAssetLoad;
   nerveMaskImg.onload = onAssetLoad;
+  // Treat failed loads as loaded so the animation still starts (without masks)
+  brainImg.onerror = onAssetLoad;
+  chipMaskImg.onerror = onAssetLoad;
+  aiMaskImg.onerror = onAssetLoad;
+  nerveMaskImg.onerror = onAssetLoad;
 
   // Draw masks into offscreen canvases at mask resolution
   function prepareMasks() {
@@ -212,74 +222,66 @@
   function composeFrame(t) {
     tempCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
 
-    // Layer 1: AI glow
-    const aiTemp = makeCanvas(MASK_SIZE, MASK_SIZE);
-    const aiTempCtx = aiTemp.getContext('2d');
-    aiTempCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
+    // Layer 1: AI glow (uses pre-allocated aiLayerCanvas)
+    aiLayerCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
     const p = (t % LOOP_DURATION) / LOOP_DURATION;
     const alpha = 0.3 + Math.sin(p * Math.PI * 2) * 0.2;
-    aiTempCtx.fillStyle = AI_GLOW_COLOR.replace('0.4', alpha.toFixed(3));
-    aiTempCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
-    aiTempCtx.globalCompositeOperation = 'destination-in';
-    aiTempCtx.drawImage(aiMaskCanvas, 0, 0);
-    aiTempCtx.globalCompositeOperation = 'source-over';
+    aiLayerCtx.fillStyle = AI_GLOW_COLOR.replace('0.4', alpha.toFixed(3));
+    aiLayerCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
+    aiLayerCtx.globalCompositeOperation = 'destination-in';
+    aiLayerCtx.drawImage(aiMaskCanvas, 0, 0);
+    aiLayerCtx.globalCompositeOperation = 'source-over';
+    tempCtx.drawImage(aiLayerCanvas, 0, 0);
 
-    tempCtx.drawImage(aiTemp, 0, 0);
-
-    // Layer 2: chip flash / digital / bio pulses
+    // Layer 2: chip flash / digital / bio pulses (uses pre-allocated pulseLayerCanvas)
     if (t <= CHIP_FLASH_END) {
-      const ef = makeCanvas(MASK_SIZE, MASK_SIZE);
-      const efCtx = ef.getContext('2d');
+      pulseLayerCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
       const p1 = t / CHIP_FLASH_END;
       const alpha1 = 1 - p1;
       const r1 = 40 + p1 * 30;
-      const g1 = efCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, 0, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r1);
+      const g1 = pulseLayerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, 0, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r1);
       g1.addColorStop(0, CHIP_FLASH_COLOR.replace('1)', alpha1.toFixed(3) + ')'));
       g1.addColorStop(1, 'rgba(0,0,0,0)');
-      efCtx.fillStyle = g1;
-      efCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
-      efCtx.globalCompositeOperation = 'destination-in';
-      efCtx.drawImage(maskCanvas, 0, 0);
-      efCtx.globalCompositeOperation = 'source-over';
-      tempCtx.drawImage(ef, 0, 0);
+      pulseLayerCtx.fillStyle = g1;
+      pulseLayerCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
+      pulseLayerCtx.globalCompositeOperation = 'destination-in';
+      pulseLayerCtx.drawImage(maskCanvas, 0, 0);
+      pulseLayerCtx.globalCompositeOperation = 'source-over';
+      tempCtx.drawImage(pulseLayerCanvas, 0, 0);
     }
 
     if (t > CHIP_FLASH_END && t <= DIGITAL_PULSE_END) {
+      pulseLayerCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
       const p2 = (t - CHIP_FLASH_END) / (DIGITAL_PULSE_END - CHIP_FLASH_END);
       const alpha2 = 1 - p2;
-      const maxR = Math.max(MASK_SIZE, MASK_SIZE);
-      const r2 = 40 + p2 * maxR;
-      const ef = makeCanvas(MASK_SIZE, MASK_SIZE);
-      const efCtx = ef.getContext('2d');
-      const g2 = efCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, r2 * 0.2, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r2);
+      const r2 = 40 + p2 * MASK_SIZE;
+      const g2 = pulseLayerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, r2 * 0.2, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r2);
       g2.addColorStop(0, 'rgba(0,0,0,0)');
       g2.addColorStop(0.3, DIGITAL_PULSE_COLOR.replace('1)', alpha2.toFixed(3) + ')'));
       g2.addColorStop(1, 'rgba(0,0,0,0)');
-      efCtx.fillStyle = g2;
-      efCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
-      efCtx.globalCompositeOperation = 'destination-in';
-      efCtx.drawImage(maskCanvas, 0, 0);
-      efCtx.globalCompositeOperation = 'source-over';
-      tempCtx.drawImage(ef, 0, 0);
+      pulseLayerCtx.fillStyle = g2;
+      pulseLayerCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
+      pulseLayerCtx.globalCompositeOperation = 'destination-in';
+      pulseLayerCtx.drawImage(maskCanvas, 0, 0);
+      pulseLayerCtx.globalCompositeOperation = 'source-over';
+      tempCtx.drawImage(pulseLayerCanvas, 0, 0);
     }
 
     if (t > CHIP_FLASH_END && t <= BIO_PULSE_END) {
+      pulseLayerCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
       const p3 = (t - CHIP_FLASH_END) / (BIO_PULSE_END - CHIP_FLASH_END);
       const alpha3 = 1 - p3;
-      const maxR = Math.max(MASK_SIZE, MASK_SIZE) * 1.2;
-      const r3 = 20 + p3 * maxR;
-      const ef = makeCanvas(MASK_SIZE, MASK_SIZE);
-      const efCtx = ef.getContext('2d');
-      const g3 = efCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, r3 * 0.1, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r3);
+      const r3 = 20 + p3 * MASK_SIZE * 1.2;
+      const g3 = pulseLayerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, r3 * 0.1, CHIP_ORIGIN.x, CHIP_ORIGIN.y, r3);
       g3.addColorStop(0, 'rgba(0,0,0,0)');
       g3.addColorStop(0.25, BIO_PULSE_COLOR.replace('1)', alpha3.toFixed(3) + ')'));
       g3.addColorStop(1, 'rgba(0,0,0,0)');
-      efCtx.fillStyle = g3;
-      efCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
-      efCtx.globalCompositeOperation = 'destination-in';
-      efCtx.drawImage(nerveMaskCanvas, 0, 0);
-      efCtx.globalCompositeOperation = 'source-over';
-      tempCtx.drawImage(ef, 0, 0);
+      pulseLayerCtx.fillStyle = g3;
+      pulseLayerCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
+      pulseLayerCtx.globalCompositeOperation = 'destination-in';
+      pulseLayerCtx.drawImage(nerveMaskCanvas, 0, 0);
+      pulseLayerCtx.globalCompositeOperation = 'source-over';
+      tempCtx.drawImage(pulseLayerCanvas, 0, 0);
     }
   }
 
