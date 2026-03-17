@@ -131,27 +131,35 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Auto versioning: place version.json in repo root to update UI
       if ('fetch' in window) {
-        fetch('version.json', {cache: 'no-store'}).then(r => {
+        fetch('version.json').then(r => {
           if (r.ok) return r.json();
+          return null;
         }).then(data => {
           if (data && data.version) document.getElementById('version').textContent = data.version;
         }).catch(()=>{/* ignore */});
       }
 
       // Image fallback check
-      const checkImage = (img, fallback) => {
-        if (!img) return;
-        if (img.complete) { if (img.naturalWidth === 0) img.src = fallback; }
-        else img.addEventListener('error', ()=> img.src = fallback);
-      };
-      checkImage(document.querySelector('.avatar img'), 'Image/crovex_profile.png');
+      const avatarImg = document.querySelector('.avatar img');
+      if (avatarImg) {
+        if (avatarImg.complete && avatarImg.naturalWidth === 0) {
+          avatarImg.src = 'Image/crovex_profile.png';
+        } else {
+          avatarImg.addEventListener('error', () => { avatarImg.src = 'Image/crovex_profile.png'; });
+        }
+      }
 
       // Gentle console update using requestIdleCallback
       const consoleEl = document.getElementById('console');
+      const appendToConsole = () => {
+        const line = document.createElement('div');
+        line.textContent = '> Systems nominal.';
+        consoleEl.appendChild(line);
+      };
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(()=> consoleEl.innerHTML += '<div>&gt; Systems nominal.</div>', {timeout:200});
+        requestIdleCallback(appendToConsole);
       } else {
-        setTimeout(()=> consoleEl.innerHTML += '<div>&gt; Systems nominal.</div>', 600);
+        setTimeout(appendToConsole, 600);
       }
 
       // Optional service worker registration (uncomment to enable)
