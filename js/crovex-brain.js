@@ -1,11 +1,14 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-15';
+  const VERSION = '20260317-16';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
   const CHIP_ORIGIN = { x: 532, y: 540 };
+  // Fine calibration: shift all mask-driven effects over the brain image.
+  const MASK_OFFSET_X = -14;
+  const MASK_OFFSET_Y = 10;
 
   const ASSET_PATH = 'Image/';
   const BRAIN_SRC = ASSET_PATH + 'brain-full.jpeg?v=' + VERSION;
@@ -213,9 +216,11 @@
 
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 1;
-    ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
+    const alignedDx = dx + (MASK_OFFSET_X / SIZE) * dw;
+    const alignedDy = dy + (MASK_OFFSET_Y / SIZE) * dh;
+    ctx.drawImage(temp, 0, 0, SIZE, SIZE, alignedDx, alignedDy, dw, dh);
     ctx.globalAlpha = 0.85;
-    ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
+    ctx.drawImage(temp, 0, 0, SIZE, SIZE, alignedDx, alignedDy, dw, dh);
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
 
