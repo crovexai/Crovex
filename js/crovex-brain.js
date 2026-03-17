@@ -2,7 +2,7 @@
 // CROVEX brain animation engine
 (function () {
   const CANVAS_ID = 'crovexBrain';
-  const ASSET_VERSION = '20260317-6';
+  const ASSET_VERSION = '20260317-7';
   const ASSET_PATH = 'Image/';
   const BRAIN_IMG = ASSET_PATH + 'brain-full.jpeg?v=' + ASSET_VERSION;
   const CHIP_MASK_IMG = ASSET_PATH + 'chip-masks.png?v=' + ASSET_VERSION;
@@ -286,13 +286,14 @@
 
     ctx.clearRect(0, 0, w, h);
 
+    let dw = w;
+    let dh = h;
+    let dx = 0;
+    let dy = 0;
+
     if (brainImg.complete && brainImg.naturalWidth) {
       const imgRatio = brainImg.width / brainImg.height;
       const screenRatio = w / h;
-      let dw;
-      let dh;
-      let dx;
-      let dy;
 
       if (imgRatio > screenRatio) {
         dh = h;
@@ -306,12 +307,29 @@
         dy = (h - dh) / 2;
       }
 
-      ctx.globalAlpha = useInlinePulseCanvas ? 0.9 : 1;
-      ctx.drawImage(brainImg, dx, dy, dw, dh);
+      if (!useInlinePulseCanvas) {
+        ctx.globalAlpha = 1;
+        ctx.drawImage(brainImg, dx, dy, dw, dh);
+      }
     }
 
     ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'lighter';
     ctx.drawImage(tempCanvas, 0, 0, MASK_SIZE, MASK_SIZE, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'source-over';
+
+    // Debug-visible marker: proves automation loop is running from chip origin.
+    const phase = ((performance.now() / 1000) % LOOP_DURATION) / LOOP_DURATION;
+    const pulse = 0.5 + 0.5 * Math.sin(phase * Math.PI * 2);
+    const chipX = dx + (CHIP_ORIGIN.x / MASK_SIZE) * dw;
+    const chipY = dy + (CHIP_ORIGIN.y / MASK_SIZE) * dh;
+    const ringR = 8 + pulse * 18;
+
+    ctx.strokeStyle = 'rgba(0,255,255,' + (0.35 + pulse * 0.55).toFixed(3) + ')';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(chipX, chipY, ringR, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
   let start = null;
