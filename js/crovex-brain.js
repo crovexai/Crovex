@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-13';
+  const VERSION = '20260317-14';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -144,17 +144,17 @@
     const flash = Math.max(0, 1 - p / 0.2);
     const chipR = 18 + (1 - flash) * 120;
     const chipGrad = layerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, 0, CHIP_ORIGIN.x, CHIP_ORIGIN.y, chipR);
-    chipGrad.addColorStop(0, 'rgba(130,255,255,' + Math.min(1, flash * 1.6).toFixed(3) + ')');
-    chipGrad.addColorStop(0.28, 'rgba(0,255,220,' + (flash * 0.95).toFixed(3) + ')');
+    chipGrad.addColorStop(0, 'rgba(190,255,255,' + Math.min(1, flash * 2.4).toFixed(3) + ')');
+    chipGrad.addColorStop(0.28, 'rgba(40,255,240,' + Math.min(1, flash * 1.35).toFixed(3) + ')');
     chipGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawMaskedGradient(chipMask, chipGrad);
 
     const boardR = 60 + p * 1450;
-    const boardA = Math.max(0, 1.25 - p * 0.95);
+    const boardA = Math.max(0, 1.6 - p * 0.9);
     const boardGrad = layerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, boardR * 0.22, CHIP_ORIGIN.x, CHIP_ORIGIN.y, boardR);
     boardGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    boardGrad.addColorStop(0.25, 'rgba(0,255,200,' + boardA.toFixed(3) + ')');
-    boardGrad.addColorStop(0.45, 'rgba(130,255,255,' + (boardA * 0.75).toFixed(3) + ')');
+    boardGrad.addColorStop(0.25, 'rgba(50,255,220,' + Math.min(1, boardA).toFixed(3) + ')');
+    boardGrad.addColorStop(0.45, 'rgba(180,255,255,' + Math.min(1, boardA * 0.9).toFixed(3) + ')');
     boardGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawMaskedGradient(chipMask, boardGrad);
 
@@ -162,18 +162,18 @@
     const aiR = 40 + p * 1550;
     const aiA = 0.8 + 0.2 * Math.sin(p * Math.PI * 2);
     const aiGrad = layerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, aiR * 0.08, CHIP_ORIGIN.x, CHIP_ORIGIN.y, aiR);
-    aiGrad.addColorStop(0, 'rgba(120,220,255,' + (aiA * 1.1).toFixed(3) + ')');
-    aiGrad.addColorStop(0.55, 'rgba(0,170,255,' + (aiA * 0.6).toFixed(3) + ')');
+    aiGrad.addColorStop(0, 'rgba(180,235,255,' + Math.min(1, aiA * 1.35).toFixed(3) + ')');
+    aiGrad.addColorStop(0.55, 'rgba(60,200,255,' + Math.min(1, aiA * 0.9).toFixed(3) + ')');
     aiGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawMaskedGradient(aiMask, aiGrad);
 
     // nerve-mask: left-side biological pulse
     const bioR = 35 + p * 1500;
-    const bioA = Math.max(0, 1.15 - p * 0.72);
+    const bioA = Math.max(0, 1.45 - p * 0.68);
     const bioGrad = layerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, bioR * 0.1, CHIP_ORIGIN.x, CHIP_ORIGIN.y, bioR);
     bioGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    bioGrad.addColorStop(0.22, 'rgba(255,90,210,' + bioA.toFixed(3) + ')');
-    bioGrad.addColorStop(0.45, 'rgba(255,160,220,' + (bioA * 0.6).toFixed(3) + ')');
+    bioGrad.addColorStop(0.22, 'rgba(255,120,220,' + Math.min(1, bioA).toFixed(3) + ')');
+    bioGrad.addColorStop(0.45, 'rgba(255,190,235,' + Math.min(1, bioA * 0.85).toFixed(3) + ')');
     bioGrad.addColorStop(1, 'rgba(0,0,0,0)');
     drawMaskedGradient(nerveMask, bioGrad);
   }
@@ -214,7 +214,10 @@
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 1;
     ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
+    ctx.globalAlpha = 0.85;
+    ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
     ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
 
   }
 
