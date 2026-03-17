@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-9';
+  const VERSION = '20260317-10';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -197,37 +197,41 @@
 
     ctx.clearRect(0, 0, w, h);
 
-    if (!inlineMode && brainImg.complete && brainImg.naturalWidth) {
-      const imgRatio = brainImg.width / brainImg.height;
-      const screenRatio = w / h;
-      let dw;
-      let dh;
-      let dx;
-      let dy;
+    const imgRatio = (brainImg.complete && brainImg.naturalWidth)
+      ? brainImg.width / brainImg.height
+      : 1;
+    const screenRatio = w / h;
+    let dw;
+    let dh;
+    let dx;
+    let dy;
 
-      if (imgRatio > screenRatio) {
-        dh = h;
-        dw = imgRatio * dh;
-        dx = (w - dw) / 2;
-        dy = 0;
-      } else {
-        dw = w;
-        dh = dw / imgRatio;
-        dx = 0;
-        dy = (h - dh) / 2;
-      }
+    // Match CSS object-fit: cover mapping used by the background image.
+    if (imgRatio > screenRatio) {
+      dh = h;
+      dw = imgRatio * dh;
+      dx = (w - dw) / 2;
+      dy = 0;
+    } else {
+      dw = w;
+      dh = dw / imgRatio;
+      dx = 0;
+      dy = (h - dh) / 2;
+    }
+
+    if (!inlineMode && brainImg.complete && brainImg.naturalWidth) {
       ctx.globalAlpha = 1;
       ctx.drawImage(brainImg, dx, dy, dw, dh);
     }
 
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 1;
-    ctx.drawImage(temp, 0, 0, SIZE, SIZE, 0, 0, w, h);
+    ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
     ctx.globalCompositeOperation = 'source-over';
 
     // Strong visible origin marker.
-    const px = (CHIP_ORIGIN.x / SIZE) * w;
-    const py = (CHIP_ORIGIN.y / SIZE) * h;
+    const px = dx + (CHIP_ORIGIN.x / SIZE) * dw;
+    const py = dy + (CHIP_ORIGIN.y / SIZE) * dh;
     ctx.fillStyle = 'rgba(255,255,255,0.95)';
     ctx.beginPath();
     ctx.arc(px, py, 4, 0, Math.PI * 2);
