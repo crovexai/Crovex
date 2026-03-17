@@ -27,7 +27,43 @@
   </style>
 </head>
 
-<body>
+<script>
+(function(){
+  const out = document.createElement('div');
+  out.id = 'crovex-debug';
+  Object.assign(out.style, {
+    position:'fixed', right:'12px', top:'12px', zIndex:99999,
+    background:'rgba(0,0,0,0.6)', color:'#fff', padding:'10px',
+    fontFamily:'monospace', fontSize:'13px', borderRadius:'8px', maxWidth:'320px'
+  });
+  document.body.appendChild(out);
+  function log(k,v){
+    const el = document.getElementById('dbg-'+k) || document.createElement('div');
+    el.id = 'dbg-'+k;
+    el.textContent = k + ': ' + v;
+    out.appendChild(el);
+  }
+  const checks = [
+    {name:'js', url:'js/crovex-brain.js'},
+    {name:'brain', url:'Image/brain-full.jpeg'},
+    {name:'chipMask', url:'Image/chip-mask.png'},
+    {name:'aiMask', url:'Image/ai-brain-mask.png'},
+    {name:'nerveMask', url:'Image/nerve-mask.png'}
+  ];
+  checks.forEach(c=>{
+    fetch(c.url, {method:'HEAD'}).then(r=>{
+      log(c.name, r.status + ' ' + (r.ok ? 'OK' : 'ERR'));
+    }).catch(()=>{ log(c.name, 'fetch error'); });
+  });
+  setTimeout(()=>{
+    const c = document.getElementById('crovexBrain');
+    if(!c) log('canvas','MISSING');
+    else log('canvas','found w='+c.width+' h='+c.height+' z='+c.style.zIndex);
+  }, 800);
+})();
+</script>
+
+  <body>
 
   <img src="Image/crovex_profile.png" class="crovex-logo" alt="CROVEX logo" />
 
