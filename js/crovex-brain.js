@@ -14,6 +14,7 @@
   const CHIP_ORIGIN = { x: 532, y: 540 };
   const MASK_WHITE_START = 45;
   const MASK_WHITE_END = 255;
+  const MIN_MASK_COVERAGE = 0.0015;
 
   const CHIP_FLASH_COLOR = 'rgba(0,255,255,1)';
   const DIGITAL_PULSE_COLOR = 'rgba(0,255,180,1)';
@@ -119,10 +120,48 @@
     tctx.putImageData(img, 0, 0);
   }
 
+  function writeAlphaMask(targetCanvas, sourceImg) {
+    const tctx = targetCanvas.getContext('2d');
+    tctx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
+    tctx.drawImage(sourceImg, 0, 0, MASK_SIZE, MASK_SIZE);
+
+    const img = tctx.getImageData(0, 0, MASK_SIZE, MASK_SIZE);
+    const data = img.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const a = data[i + 3];
+      data[i] = 255;
+      data[i + 1] = 255;
+      data[i + 2] = 255;
+      data[i + 3] = a;
+    }
+    tctx.putImageData(img, 0, 0);
+  }
+
+  function maskCoverage(canvasTarget) {
+    const c = canvasTarget.getContext('2d');
+    const data = c.getImageData(0, 0, MASK_SIZE, MASK_SIZE).data;
+    let active = 0;
+    let total = 0;
+
+    // Sample every 8th pixel for quick coverage estimation.
+    for (let i = 3; i < data.length; i += 32) {
+      total += 1;
+      if (data[i] > 10) active += 1;
+    }
+    return total > 0 ? active / total : 0;
+  }
+
+  function ensureUsableMask(targetCanvas, sourceImg) {
+    writeWhitePointMask(targetCanvas, sourceImg);
+    if (maskCoverage(targetCanvas) < MIN_MASK_COVERAGE) {
+      writeAlphaMask(targetCanvas, sourceImg);
+    }
+  }
+
   function prepareMasks() {
-    writeWhitePointMask(chipMaskCanvas, chipMaskImg);
-    writeWhitePointMask(aiMaskCanvas, aiMaskImg);
-    writeWhitePointMask(nerveMaskCanvas, nerveMaskImg);
+    ensureUsableMask(chipMaskCanvas, chipMaskImg);
+    ensureUsableMask(aiMaskCanvas, aiMaskImg);
+    ensureUsableMask(nerveMaskCanvas, nerveMaskImg);
   }
 
   function resizeCanvas() {
@@ -153,6 +192,28 @@
   function composeFrame(t) {
     tempCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
     const phase = (t % LOOP_DURATION) / LOOP_DURATION;
+
+    // Always-visible core automation beacon from chip origin.
+    const beacon = Math.max(0, 1 - phase / 0.2);
+    if (beacon > 0) {
+      const beaconGrad = layerCtx.createRadialGradient(
+        CHIP_ORIGIN.x,
+        CHIP_ORIGIN.y,
+        0,
+        CHIP_ORIGIN.x,
+        CHIP_ORIGIN.y,
+        120
+      );
+      beaconGrad.addColorStop(0, 'rgba(255,255,255,' + Math.min(1, beacon).toFixed(3) + ')');
+      beaconGrad.addColorStop(0.35, 'rgba(0,255,255,' + (beacon * 0.9).toFixed(3) + ')');
+      beaconGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      layerCtx.clearRect(0, 0, MASK_SIZE, MASK_SIZE);
+      layerCtx.fillStyle = beaconGrad;
+      layerCtx.fillRect(0, 0, MASK_SIZE, MASK_SIZE);
+      tempCtx.globalCompositeOperation = 'lighter';
+      tempCtx.drawImage(layerCanvas, 0, 0);
+      tempCtx.globalCompositeOperation = 'source-over';
+    }
 
     const chipBurst = Math.max(0, 1 - phase / 0.18);
     if (chipBurst > 0) {
