@@ -1,194 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#02030a">
   <title>CROVEX AI</title>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, sans-serif;
-      min-height: 100vh;
-      color: #f5f5ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #02030a;
-      overflow: hidden;
+    :root{
+      --bg-dark:#02030a;
+      --card-bg:rgba(6,8,24,0.9);
+      --accent-cyan:#00f0ff;
+      --accent-violet:#8a2be2;
+      --muted:#c7c9ff;
+      --glass-border:rgba(120,120,255,0.35);
+      --max-width:520px;
     }
 
-    .bg {
-      position: fixed;
-      inset: 0;
-      background-image: url("Image/crovex_background.png");
-      background-size: cover;
-      background-position: center;
-      filter: blur(2px) brightness(0.4);
-      transform: scale(1.05);
-      z-index: -3;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:var(--bg-dark);
+      color:#eef0ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(0,255,255,0.25), transparent 55%),
-                  radial-gradient(circle at bottom, rgba(138,43,226,0.35), transparent 60%),
-                  linear-gradient(135deg, rgba(0,0,0,0.8), rgba(5,5,20,0.95));
-      mix-blend-mode: screen;
-      opacity: 0.9;
-      z-index: -2;
+    /* Background image via picture for WebP fallback */
+    .bg-wrap{
+      position:fixed;inset:0;z-index:-3;overflow:hidden;
+    }
+    .bg-img{
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
+      filter:blur(2px) brightness(0.42);transform:scale(1.03);
+      will-change:transform,filter;
     }
 
-    .particles {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(0,255,255,0.4) 0, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(138,43,226,0.4) 0, transparent 45%);
-      opacity: 0.25;
-      animation: floatGlow 18s ease-in-out infinite alternate;
+    .overlay{
+      position:fixed;inset:0;z-index:-2;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(0,255,255,0.12), transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(138,43,226,0.12), transparent 35%),
+        linear-gradient(180deg, rgba(0,0,0,0.6), rgba(5,5,20,0.9));
+      mix-blend-mode:screen;
     }
 
-    @keyframes floatGlow {
-      0% { transform: translate3d(0,0,0) scale(1); }
-      100% { transform: translate3d(-20px,-10px,0) scale(1.05); }
+    .shell{width:100%;max-width:var(--max-width);padding:20px}
+
+    .card{
+      background:var(--card-bg);
+      border-radius:18px;
+      padding:22px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 6px 30px rgba(0,0,0,0.6);
+      backdrop-filter:blur(12px);
+      overflow:hidden;
     }
 
-    .shell { width: 100%; max-width: 480px; padding: 24px; }
-
-    .card {
-      background: rgba(5,7,20,0.9);
-      border-radius: 24px;
-      padding: 28px 22px;
-      border: 1px solid rgba(120,120,255,0.4);
-      box-shadow: 0 0 40px rgba(0,255,255,0.15), 0 0 80px rgba(138,43,226,0.25);
-      backdrop-filter: blur(18px);
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s ease-out;
+    .top{
+      display:flex;gap:16px;align-items:center;justify-content:center;margin-bottom:14px;
+      flex-direction:column;
     }
 
-    .avatar-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .avatar{
+      width:112px;height:112px;border-radius:50%;overflow:hidden;border:3px solid rgba(6,8,24,0.95);
+      box-shadow:0 6px 22px rgba(0,240,255,0.08);
+      background:linear-gradient(180deg,#071026, #0b0b18);
+      display:block;
+      flex:0 0 auto;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-    .avatar-ring {
-      width: 132px; height: 132px; border-radius: 50%; padding: 4px;
-      background: conic-gradient(from 220deg, #00ffff, #8a2be2, #00ffff);
-      box-shadow: 0 0 25px rgba(0,255,255,0.6), 0 0 40px rgba(138,43,226,0.7);
-      animation: pulseRing 3.5s ease-in-out infinite;
+    .title{font-size:.78rem;color:var(--accent-cyan);text-align:center;margin-top:8px}
+    .name{font-size:1.6rem;font-weight:700;text-align:center;margin-top:6px}
+    .bio{font-size:.95rem;color:var(--muted);text-align:center;margin:10px 0 14px}
+
+    .status{
+      display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:10px;
+      background:linear-gradient(90deg, rgba(0,255,255,0.04), rgba(138,43,226,0.06));
+      border:1px solid var(--glass-border);font-size:.78rem;margin-bottom:14px;
+    }
+    .status-dot{width:9px;height:9px;border-radius:50%;background:#00ff9d;box-shadow:0 0 8px #00ff9d}
+
+    .links{display:grid;grid-template-columns:1fr;gap:10px}
+    .link-btn{
+      display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+      border:1px solid rgba(120,120,255,0.06);color:#fff;text-decoration:none;font-size:.95rem;
+      transition:transform .12s ease,box-shadow .12s ease;
+    }
+    .link-btn:focus{outline:3px solid rgba(138,43,226,0.18);outline-offset:2px}
+    .link-btn:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+
+    .console{
+      margin-top:14px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:.78rem;background:rgba(3,5,18,0.95);padding:10px;border-radius:10px;border:1px solid var(--glass-border);
+      max-height:120px;overflow:hidden;
     }
 
-    @keyframes pulseRing {
-      0%,100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.85; }
+    /* small screens */
+    @media (max-width:420px){
+      .avatar{width:96px;height:96px}
+      .name{font-size:1.3rem}
+      .shell{padding:14px}
     }
 
-    .avatar {
-      width: 100%; height: 100%; border-radius: 50%;
-      overflow: hidden; border: 3px solid rgba(5,7,20,0.95);
-    }
-
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    .title { text-align: center; font-size: 0.78rem; color: #7ddcff; margin-bottom: 6px; }
-    .name { text-align: center; font-size: 1.7rem; font-weight: 700; margin-bottom: 6px; }
-    .bio { text-align: center; font-size: 0.95rem; color: #c7c9ff; margin-bottom: 18px; }
-
-    .status-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.75rem; padding: 8px 10px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, rgba(0,255,255,0.08), rgba(138,43,226,0.12));
-      border: 1px solid rgba(120,120,255,0.4);
-      margin-bottom: 18px;
-    }
-
-    .status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #00ff9d; box-shadow: 0 0 10px #00ff9d;
-    }
-
-    .links { display: flex; flex-direction: column; gap: 10px; }
-
-    .link-btn {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 11px 14px; border-radius: 12px;
-      border: 1px solid rgba(120,120,255,0.5);
-      background: radial-gradient(circle at top left, rgba(0,255,255,0.16), rgba(5,7,20,0.96));
-      color: white; text-decoration: none; font-size: 0.95rem;
-      transition: 0.16s;
-    }
-
-    .link-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 18px rgba(0,255,255,0.25), 0 0 28px rgba(138,43,226,0.3);
-    }
-
-    .console {
-      font-family: monospace;
-      font-size: 0.78rem;
-      background: rgba(3,5,18,0.95);
-      border-radius: 12px;
-      border: 1px solid rgba(120,120,255,0.4);
-      padding: 10px 12px;
-      max-height: 120px;
-      overflow: hidden;
+    /* reduced motion */
+    @media (prefers-reduced-motion:reduce){
+      .link-btn,.avatar{transition:none;animation:none}
     }
   </style>
 </head>
 <body>
 
-<div class="bg"></div>
-<div class="bg-overlay"></div>
-<div class="particles"></div>
-
-<div class="shell">
-  <div class="card">
-    <div class="avatar-wrap">
-      <div class="avatar-ring">
-        <div class="avatar">
-          <img src="Image/crovex_profile.png">
-        </div>
-      </div>
-    </div>
-
-    <div class="title">Autonomous Intelligence System</div>
-    <div class="name">CROVEX AI</div>
-    <div class="bio" id="bio"></div>
-
-    <div class="status-bar">
-      <div><span class="status-dot"></span> System status: Online</div>
-      <div id="version">v1.0.0</div>
-    </div>
-
-    <div class="links">
-      <a class="link-btn" href="https://tiktok.com/">TikTok ↗</a>
-      <a class="link-btn" href="https://facebook.com/">Facebook ↗</a>
-      <a class="link-btn" href="https://instagram.com/">Instagram ↗</a>
-      <a class="link-btn" href="https://twitter.com/">Twitter ↗</a>
-      <a class="link-btn" href="https://github.com/">GitHub ↗</a>
-      <a class="link-btn" href="admin.html">Admin Access ↗</a>
-    </div>
-
-    <div class="console" id="console">
-      <div>> Initializing CROVEX AI…</div>
-    </div>
+  <div class="bg-wrap" aria-hidden="true">
+    <picture>
+      <source srcset="Image/crovex_background.webp" type="image/webp">
+      <img class="bg-img" src="Image/crovex_background.png" alt="">
+    </picture>
   </div>
-</div>
 
-<script>
-  const bioText = "Building next-generation autonomous AI systems for the future.";
-  let i = 0;
-  function typeBio() {
-    if (i <= bioText.length) {
-      document.getElementById("bio").textContent = bioText.slice(0, i++);
-      setTimeout(typeBio, 40);
-    }
-  }
-  setTimeout(typeBio, 600);
-</script>
+  <div class="overlay" aria-hidden="true"></div>
 
+  <main class="shell" role="main">
+    <section class="card" aria-labelledby="crovex-title">
+      <div class="top">
+        <div class="avatar" aria-hidden="false">
+          <img src="Image/crovex_profile.png"
+               srcset="Image/crovex_profile.png 1x, Image/crovex_profile@2x.png 2x"
+               width="112" height="112" alt="CROVEX AI profile image" loading="lazy">
+        </div>
+
+        <div id="crovex-title" class="title">Autonomous Intelligence System</div>
+        <h1 class="name">CROVEX AI</h1>
+        <p class="bio" id="bio">Building next-generation autonomous AI systems for the future.</p>
+      </div>
+
+      <div class="status" role="status" aria-live="polite">
+        <div><span class="status-dot" aria-hidden="true"></span> System status: <strong id="status-text">Online</strong></div>
+        <div id="version">v1.0.0</div>
+      </div>
+
+      <nav class="links" aria-label="CROVEX links">
+        <a class="link-btn" href="https://tiktok.com/" rel="noopener" target="_blank">TikTok <span aria-hidden="true">↗</span></a>
+        <a class="link-btn" href="https://facebook.com/" rel="noopener" target="_blank">Facebook <span aria-hidden="true">↗</span></a>
+        <a class="link-btn" href="https://instagram.com/" rel="noopener" target="_blank">Instagram <span aria-hidden="true">↗</span></a>
+        <a class="link-btn" href="https://twitter.com/" rel="noopener" target="_blank">Twitter <span aria-hidden="true">↗</span></a>
+        <a class="link-btn" href="https://github.com/" rel="noopener" target="_blank">GitHub <span aria-hidden="true">↗</span></a>
+        <a class="link-btn" href="admin.html">Admin Access <span aria-hidden="true">↗</span></a>
+      </nav>
+
+      <div class="console" id="console" aria-hidden="false">
+        <div>&gt; Initializing CROVEX AI…</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Defer noncritical work until after paint
+    window.addEventListener('load', () => {
+      // Update version from optional version.json
+      if ('fetch' in window) {
+        fetch('version.json', {cache: 'no-store'}).then(r => {
+          if (r.ok) return r.json();
+        }).then(data => {
+          if (data && data.version) {
+            document.getElementById('version').textContent = data.version;
+          }
+        }).catch(()=>{/* ignore */});
+      }
+
+      // Image fallback check
+      const checkImage = (img, fallback) => {
+        if (!img) return;
+        if (img.complete) {
+          if (img.naturalWidth === 0) img.src = fallback;
+        } else {
+          img.addEventListener('error', ()=> img.src = fallback);
+        }
+      };
+      checkImage(document.querySelector('.avatar img'), 'Image/crovex_profile.png');
+
+      // Small analytics hook placeholder (uncomment and replace URL)
+      // if (navigator.sendBeacon) {
+      //   navigator.sendBeacon('/ping', JSON.stringify({page:'index', ts:Date.now()}));
+      // }
+
+      // Gentle console animation using requestIdleCallback
+      const consoleEl = document.getElementById('console');
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(()=> {
+          consoleEl.innerHTML += '<div>&gt; Systems nominal.</div>';
+        }, {timeout:200});
+      } else {
+        setTimeout(()=> consoleEl.innerHTML += '<div>&gt; Systems nominal.</div>', 600);
+      }
+    });
+  </script>
 </body>
 </html>
