@@ -128,8 +128,8 @@
   </main>
 
   <script>
-    window.addEventListener('load', () => {
-      // Optional auto-versioning (place version.json in repo root)
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto versioning: place version.json in repo root to update UI
       if ('fetch' in window) {
         fetch('version.json', {cache: 'no-store'}).then(r => {
           if (r.ok) return r.json();
@@ -153,6 +153,11 @@
       } else {
         setTimeout(()=> consoleEl.innerHTML += '<div>&gt; Systems nominal.</div>', 600);
       }
+
+      // Optional service worker registration (uncomment to enable)
+      // if ('serviceWorker' in navigator) {
+      //   navigator.serviceWorker.register('/sw.js').catch(()=>{/* ignore */});
+      // }
     });
   </script>
 </body>
