@@ -41,6 +41,20 @@
       pointer-events: none;
       z-index: 2;
     }
+
+    .build-tag {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 9999;
+      color: #9ff;
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(0, 255, 255, 0.6);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font: 12px/1.2 monospace;
+      letter-spacing: 0.2px;
+    }
   </style>
 </head>
 
@@ -50,6 +64,8 @@
     <canvas id="pulseCanvas"></canvas>
   </div>
 
-  <script src="js/crovex-brain.js?v=20260317-10"></script>
+  <div class="build-tag">build 20260317-11</div>
+
+  <script src="js/crovex-brain.js?v=20260317-11"></script>
 </body>
 </html>

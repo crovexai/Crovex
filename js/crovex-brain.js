@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-10';
+  const VERSION = '20260317-11';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -9,9 +9,9 @@
 
   const ASSET_PATH = 'Image/';
   const BRAIN_SRC = ASSET_PATH + 'brain-full.jpeg?v=' + VERSION;
-  const CHIP_MASK_SRC = ASSET_PATH + 'chip-masks.png?v=' + VERSION;
-  const AI_MASK_SRC = ASSET_PATH + 'ai-brain-masks.png?v=' + VERSION;
-  const NERVE_MASK_SRC = ASSET_PATH + 'nerve-masks.png?v=' + VERSION;
+  const CHIP_MASK_SRC = ASSET_PATH + 'chip-mask.png?v=' + VERSION;
+  const AI_MASK_SRC = ASSET_PATH + 'ai-brain-mask.png?v=' + VERSION;
+  const NERVE_MASK_SRC = ASSET_PATH + 'nerve-mask.png?v=' + VERSION;
 
   const canvas = document.getElementById('pulseCanvas') || (function () {
     const c = document.createElement('canvas');
