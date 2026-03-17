@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-11';
+  const VERSION = '20260317-12';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -92,8 +92,8 @@
       const a = d[i + 3];
       const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-      const whiteAlpha = l >= 28 ? Math.floor(Math.pow((l - 28) / (255 - 28), 0.45) * 255) : 0;
-      const out = Math.max(whiteAlpha, Math.floor(a * 0.7));
+      const whiteAlpha = l >= 72 ? Math.floor(Math.pow((l - 72) / (255 - 72), 0.7) * 255) : 0;
+      const out = Math.min(whiteAlpha, a);
 
       d[i] = 255;
       d[i + 1] = 255;
@@ -139,19 +139,6 @@
   function compose(t) {
     tempCtx.clearRect(0, 0, SIZE, SIZE);
     const p = (t % LOOP_SECONDS) / LOOP_SECONDS;
-
-    // Unmasked beacon so automation is always visible.
-    const beaconA = 0.75 + 0.25 * Math.sin(p * Math.PI * 2);
-    const beacon = layerCtx.createRadialGradient(CHIP_ORIGIN.x, CHIP_ORIGIN.y, 0, CHIP_ORIGIN.x, CHIP_ORIGIN.y, 220);
-    beacon.addColorStop(0, 'rgba(255,255,255,' + beaconA.toFixed(3) + ')');
-    beacon.addColorStop(0.2, 'rgba(0,255,255,' + (beaconA * 0.95).toFixed(3) + ')');
-    beacon.addColorStop(1, 'rgba(0,0,0,0)');
-    layerCtx.clearRect(0, 0, SIZE, SIZE);
-    layerCtx.fillStyle = beacon;
-    layerCtx.fillRect(0, 0, SIZE, SIZE);
-    tempCtx.globalCompositeOperation = 'lighter';
-    tempCtx.drawImage(layer, 0, 0);
-    tempCtx.globalCompositeOperation = 'source-over';
 
     // chip-mask: microchip flash + motherboard ring pulse
     const flash = Math.max(0, 1 - p / 0.2);
@@ -229,18 +216,6 @@
     ctx.drawImage(temp, 0, 0, SIZE, SIZE, dx, dy, dw, dh);
     ctx.globalCompositeOperation = 'source-over';
 
-    // Strong visible origin marker.
-    const px = dx + (CHIP_ORIGIN.x / SIZE) * dw;
-    const py = dy + (CHIP_ORIGIN.y / SIZE) * dh;
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    ctx.beginPath();
-    ctx.arc(px, py, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,255,255,0.95)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(px, py, 16, 0, Math.PI * 2);
-    ctx.stroke();
   }
 
   let start = null;
