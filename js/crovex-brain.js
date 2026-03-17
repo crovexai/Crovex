@@ -2,11 +2,11 @@
 // Shared CROVEX brain animation engine
 (function () {
   const CANVAS_ID = 'crovexBrain';
-  const ASSET_PATH = 'Image/';
-  const BRAIN_IMG = ASSET_PATH + 'brain-full.jpeg';
-  const CHIP_MASK_IMG = ASSET_PATH + 'chip-masks.png';
-  const AI_MASK_IMG = ASSET_PATH + 'ai-brain-masks.png';
-  const NERVE_MASK_IMG = ASSET_PATH + 'nerve-masks.png';
+const ASSET_PATH = 'Image/';
+const BRAIN_IMG = ASSET_PATH + 'brain-full.jpeg';
+const CHIP_MASK_IMG = ASSET_PATH + 'chip-mask.png';
+const AI_MASK_IMG = ASSET_PATH + 'ai-brain-mask.png';
+const NERVE_MASK_IMG = ASSET_PATH + 'nerve-mask.png';
 
   // Timing (seconds)
   const LOOP_DURATION = 2.4;
