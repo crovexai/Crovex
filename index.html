@@ -6,67 +6,66 @@
   <title>CROVEX AI Brain Pulse</title>
 
   <style>
-    html { background: #02030a; }
     body {
       margin: 0;
-      background: transparent;
-      height: 100vh;
+      background: #02030a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       overflow: hidden;
       font-family: system-ui, sans-serif;
     }
 
-    /* CROVEX profile logo overlay */
+    .brain-wrapper {
+      position: relative;
+      width: min(92vw, 760px);
+      height: min(92vw, 760px);
+      max-height: 92vh;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .brain-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 1;
+      display: block;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .crovex-logo {
-      position: fixed;
+      position: absolute;
       top: 20px;
       left: 20px;
       width: 120px;
       opacity: 0.9;
       pointer-events: none;
+      z-index: 3;
     }
   </style>
 </head>
 
-<script>
-(function(){
-  const out = document.createElement('div');
-  out.id = 'crovex-debug';
-  Object.assign(out.style, {
-    position:'fixed', right:'12px', top:'12px', zIndex:99999,
-    background:'rgba(0,0,0,0.6)', color:'#fff', padding:'10px',
-    fontFamily:'monospace', fontSize:'13px', borderRadius:'8px', maxWidth:'320px'
-  });
-  document.body.appendChild(out);
-  function log(k,v){
-    const el = document.getElementById('dbg-'+k) || document.createElement('div');
-    el.id = 'dbg-'+k;
-    el.textContent = k + ': ' + v;
-    out.appendChild(el);
-  }
-  const checks = [
-    {name:'js', url:'js/crovex-brain.js'},
-    {name:'brain', url:'Image/brain-full.jpeg'},
-    {name:'chipMask', url:'Image/chip-mask.png'},
-    {name:'aiMask', url:'Image/ai-brain-mask.png'},
-    {name:'nerveMask', url:'Image/nerve-mask.png'}
-  ];
-  checks.forEach(c=>{
-    fetch(c.url, {method:'HEAD'}).then(r=>{
-      log(c.name, r.status + ' ' + (r.ok ? 'OK' : 'ERR'));
-    }).catch(()=>{ log(c.name, 'fetch error'); });
-  });
-  setTimeout(()=>{
-    const c = document.getElementById('crovexBrain');
-    if(!c) log('canvas','MISSING');
-    else log('canvas','found w='+c.width+' h='+c.height+' z='+c.style.zIndex);
-  }, 800);
-})();
-</script>
+<body>
+  <div class="brain-wrapper">
+    <img src="Image/crovex_profile.png?v=20260317-1" class="crovex-logo" alt="CROVEX logo" />
+    <img src="Image/brain-full.jpeg?v=20260317-1" class="brain-bg" alt="CROVEX brain" />
+    <canvas id="pulseCanvas"></canvas>
+  </div>
 
-  <body>
-
-  <img src="Image/crovex_profile.png" class="crovex-logo" alt="CROVEX logo" />
-
-  <script src="js/crovex-brain.js"></script>
+  <script src="js/crovex-brain.js?v=20260317-5"></script>
 </body>
 </html>
