@@ -1,7 +1,7 @@
 // js/crovex-brain.js
 // High-visibility CROVEX pulse engine
 (function () {
-  const VERSION = '20260317-24';
+  const VERSION = '20260317-25';
   const SIZE = 1024;
   const LOOP_SECONDS = 2.2;
 
@@ -95,7 +95,7 @@
       const a = d[i + 3];
       const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-      const whiteAlpha = l >= 200 ? Math.floor(Math.pow((l - 200) / (255 - 200), 0.55) * 255) : 0;
+      const whiteAlpha = l >= 21 ? Math.floor(Math.pow((l - 21) / (255 - 21), 0.55) * 255) : 0;
       const out = Math.min(whiteAlpha, a);
 
       d[i] = 255;
