@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CROVEX AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      color: #f5f5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #02030a;
+      overflow: hidden;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-image: url("background.jpg"); /* your background file */
+      background-size: cover;
+      background-position: center;
+      filter: blur(2px) brightness(0.4);
+      transform: scale(1.05);
+      z-index: -3;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(0, 255, 255, 0.25), transparent 55%),
+                  radial-gradient(circle at bottom, rgba(138, 43, 226, 0.35), transparent 60%),
+                  linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(5, 5, 20, 0.95));
+      mix-blend-mode: screen;
+      opacity: 0.9;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.4) 0, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.4) 0, transparent 45%);
+      opacity: 0.25;
+      animation: floatGlow 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(-20px, -10px, 0) scale(1.05); }
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+    }
+
+    .card {
+      background: rgba(5, 7, 20, 0.9);
+      border-radius: 24px;
+      padding: 28px 22px 26px;
+      border: 1px solid rgba(120, 120, 255, 0.4);
+      box-shadow:
+        0 0 40px rgba(0, 255, 255, 0.15),
+        0 0 80px rgba(138, 43, 226, 0.25);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease-out;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        conic-gradient(from 180deg, rgba(0, 255, 255, 0.2), rgba(138, 43, 226, 0.35), rgba(0, 255, 255, 0.2));
+      opacity: 0.18;
+      mix-blend-mode: screen;
+      animation: spin 26s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .avatar-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .avatar-ring {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      padding: 4px;
+      background: conic-gradient(
+        from 220deg,
+        #00ffff,
+        #8a2be2,
+        #00ffff
+      );
+      box-shadow:
+        0 0 25px rgba(0, 255, 255, 0.6),
+        0 0 40px rgba(138, 43, 226, 0.7);
+      animation: pulseRing 3.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseRing {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid rgba(5, 7, 20, 0.95);
+      background: #050714;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 0.12em;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      color: #7ddcff;
+    }
+
+    .name {
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .bio {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #c7c9ff;
+      min-height: 1.2em;
+      margin-bottom: 18px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #9ea3ff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.08), rgba(138, 43, 226, 0.12));
+      border: 1px solid rgba(120, 120, 255, 0.4);
+      margin-bottom: 18px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ff9d;
+      box-shadow: 0 0 10px #00ff9d;
+      margin-right: 6px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-right {
+      opacity: 0.85;
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      margin-top: 10px;
+    }
+
+    .link-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(120, 120, 255, 0.5);
+      background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.16), rgba(5, 7, 20, 0.96));
+      color: #f5f5ff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .link-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .link-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .link-pill {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 255, 0.6);
+      color: #9ffcff;
+      background: rgba(0, 255, 255, 0.08);
+    }
+
+    .link-arrow {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .link-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(0, 255, 255, 0.18), rgba(138, 43, 226, 0.18));
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+
+    .link
