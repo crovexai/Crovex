@@ -9,21 +9,16 @@
     body {
       margin: 0;
       background: #02030a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       font-family: system-ui, sans-serif;
     }
 
     .brain-wrapper {
-      position: relative;
-      width: min(92vw, 760px);
-      height: min(92vw, 760px);
-      max-height: 92vh;
+      position: fixed;
+      inset: 0;
       background: #000;
-      border-radius: 12px;
       overflow: hidden;
     }
 
@@ -46,22 +41,11 @@
       pointer-events: none;
       z-index: 2;
     }
-
-    .crovex-logo {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 120px;
-      opacity: 0.9;
-      pointer-events: none;
-      z-index: 3;
-    }
   </style>
 </head>
 
 <body>
   <div class="brain-wrapper">
-    <img src="Image/crovex_profile.png?v=20260317-1" class="crovex-logo" alt="CROVEX logo" />
     <img src="Image/brain-full.jpeg?v=20260317-1" class="brain-bg" alt="CROVEX brain" />
     <canvas id="pulseCanvas"></canvas>
   </div>
